@@ -5,9 +5,9 @@ library(pROC)
 outcome <- c('is_diabetic')
 predictors <- names(diabetes)[!names(diabetes) %in% outcome]
 
-train_matrix <- as.matrix(diabetes, rownames.force = NA)
+mx.diabetes <- as.matrix(diabetes, rownames.force = NA)
 
-train_dmatrix <- xgb.DMatrix(data = train_matrix[, predictors], label = train_matrix[, outcome] )
+train_dmatrix <- xgb.DMatrix(data = mx.diabetes[, predictors], label = mx.diabetes[, outcome] )
 
 fit.xgb <- xgboost(
   data = train_dmatrix,
@@ -19,17 +19,17 @@ xgb.dump(fit.xgb)
 
 predictions <- predict(fit.xgb, as.matrix(diabetes[, predictors]))
 
-mean(as.numeric(predictions > 0.5) != train_matrix[, outcome])
+mean(as.numeric(predictions > 0.5) != diabetes[, outcome])
 
 confusionMatrix(
   as.numeric(predictions > 0.1),
-  train_matrix[, outcome],
+  diabetes[, outcome],
   mode = "everything"
 )
 
 plot.roc(
   as.numeric(predictions > 0.5),
-  train_matrix[, outcome],
+  diabetes[, outcome],
   main = "Confidence intervals",
   percent = TRUE,
   ci = TRUE,
